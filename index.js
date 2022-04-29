@@ -68,7 +68,7 @@ Game_Player.prototype._moveByInput = function (direction) {
     switch (direction) {
         case 1: {
             let canLeft = leftTest(), canDown = downTest();
-            if (canLeft && canDown) {
+            if (canLeft && canDown && leftTest(1)) {
                 this.setMovementSuccess(true);
                 let dis = this.distancePerFrame() / Math.SQRT2;
                 this._y += dis;
@@ -88,7 +88,7 @@ Game_Player.prototype._moveByInput = function (direction) {
         }
         case 3: {
             let canRight = rightTest(), canDown = downTest();
-            if (canRight && canDown) {
+            if (canRight && canDown && rightTest(1)) {
                 this.setMovementSuccess(true);
                 let dis = this.distancePerFrame() / Math.SQRT2;
                 this._y += dis;
@@ -108,7 +108,7 @@ Game_Player.prototype._moveByInput = function (direction) {
         }
         case 7: {
             let canLeft = leftTest(), canUp = upTest();
-            if (canLeft && canUp) {
+            if (canLeft && canUp && leftTest(-1)) {
                 this.setMovementSuccess(true);
                 let dis = this.distancePerFrame() / Math.SQRT2;
                 this._y -= dis;
@@ -128,7 +128,7 @@ Game_Player.prototype._moveByInput = function (direction) {
         }
         case 9: {
             let canRight = rightTest(), canUp = upTest();
-            if (canRight && canUp) {
+            if (canRight && canUp && rightTest(-1)) {
                 this.setMovementSuccess(true);
                 let dis = this.distancePerFrame() / Math.SQRT2;
                 this._y -= dis;
