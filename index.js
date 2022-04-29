@@ -81,6 +81,8 @@ Game_Player.prototype._moveByInput = function (direction) {
                 return this._moveByInput(4);
             } else if (canDown) {
                 return this._moveByInput(2);
+            } else {
+                direction = 2;
             }
             break;
         }
@@ -99,6 +101,8 @@ Game_Player.prototype._moveByInput = function (direction) {
                 return this._moveByInput(6);
             } else if (canDown) {
                 return this._moveByInput(2);
+            } else {
+                direction = 2;
             }
             break;
         }
@@ -117,6 +121,8 @@ Game_Player.prototype._moveByInput = function (direction) {
                 return this._moveByInput(4);
             } else if (canUp) {
                 return this._moveByInput(8);
+            } else {
+                direction = 8;
             }
             break;
         }
@@ -135,6 +141,8 @@ Game_Player.prototype._moveByInput = function (direction) {
                 return this._moveByInput(6);
             } else if (canUp) {
                 return this._moveByInput(8);
+            } else {
+                direction = 8;
             }
             break;
         }

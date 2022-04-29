@@ -3,4 +3,4 @@
 
 ## Usage
 
-Move `rmmz_movement.js` to `js/plugins`.
+Copy `rmmz_movement.js` to `js/plugins` and enable the plugin.
