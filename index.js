@@ -68,15 +68,21 @@ Game_Player.prototype._moveByInput = function (direction) {
     switch (direction) {
         case 1: {
             let canLeft = leftTest(), canDown = downTest();
-            if (canLeft && canDown && leftTest(1)) {
-                this.setMovementSuccess(true);
-                let dis = this.distancePerFrame() / Math.SQRT2;
-                this._y += dis;
-                this._x -= dis;
-                if (Math.round(this._y) > roundY || Math.round(this._x) < roundX) {
-                    this.increaseSteps();
+            if (canLeft && canDown) {
+                if (leftTest(1)) {
+                    this.setMovementSuccess(true);
+                    let dis = this.distancePerFrame() / Math.SQRT2;
+                    this._y += dis;
+                    this._x -= dis;
+                    if (Math.round(this._y) > roundY || Math.round(this._x) < roundX) {
+                        this.increaseSteps();
+                    }
+                    return 2;
+                } else if (this.x - roundX < roundY - this.y) {
+                    return this._moveByInput(4);
+                } else {
+                    return this._moveByInput(2);
                 }
-                return 2;
             } else if (canLeft) {
                 return this._moveByInput(4);
             } else if (canDown) {
@@ -88,15 +94,21 @@ Game_Player.prototype._moveByInput = function (direction) {
         }
         case 3: {
             let canRight = rightTest(), canDown = downTest();
-            if (canRight && canDown && rightTest(1)) {
-                this.setMovementSuccess(true);
-                let dis = this.distancePerFrame() / Math.SQRT2;
-                this._y += dis;
-                this._x += dis;
-                if (Math.round(this._y) > roundY || Math.round(this._x) > roundX) {
-                    this.increaseSteps();
+            if (canRight && canDown) {
+                if (rightTest(1)) {
+                    this.setMovementSuccess(true);
+                    let dis = this.distancePerFrame() / Math.SQRT2;
+                    this._y += dis;
+                    this._x += dis;
+                    if (Math.round(this._y) > roundY || Math.round(this._x) > roundX) {
+                        this.increaseSteps();
+                    }
+                    return 2;
+                } else if (roundX - this.x < roundY - this.y) {
+                    return this._moveByInput(6);
+                } else {
+                    return this._moveByInput(2);
                 }
-                return 2;
             } else if (canRight) {
                 return this._moveByInput(6);
             } else if (canDown) {
@@ -108,15 +120,21 @@ Game_Player.prototype._moveByInput = function (direction) {
         }
         case 7: {
             let canLeft = leftTest(), canUp = upTest();
-            if (canLeft && canUp && leftTest(-1)) {
-                this.setMovementSuccess(true);
-                let dis = this.distancePerFrame() / Math.SQRT2;
-                this._y -= dis;
-                this._x -= dis;
-                if (Math.round(this._y) < roundY || Math.round(this._x) < roundX) {
-                    this.increaseSteps();
+            if (canLeft && canUp) {
+                if (leftTest(-1)) {
+                    this.setMovementSuccess(true);
+                    let dis = this.distancePerFrame() / Math.SQRT2;
+                    this._y -= dis;
+                    this._x -= dis;
+                    if (Math.round(this._y) < roundY || Math.round(this._x) < roundX) {
+                        this.increaseSteps();
+                    }
+                    return 8;
+                } else if (this.x - roundX < this.y - roundY) {
+                    return this._moveByInput(4);
+                } else {
+                    return this._moveByInput(8);
                 }
-                return 8;
             } else if (canLeft) {
                 return this._moveByInput(4);
             } else if (canUp) {
@@ -128,15 +146,21 @@ Game_Player.prototype._moveByInput = function (direction) {
         }
         case 9: {
             let canRight = rightTest(), canUp = upTest();
-            if (canRight && canUp && rightTest(-1)) {
-                this.setMovementSuccess(true);
-                let dis = this.distancePerFrame() / Math.SQRT2;
-                this._y -= dis;
-                this._x += dis;
-                if (Math.round(this._y) < roundY || Math.round(this._x) > roundX) {
-                    this.increaseSteps();
+            if (canRight && canUp) {
+                if (rightTest(-1)) {
+                    this.setMovementSuccess(true);
+                    let dis = this.distancePerFrame() / Math.SQRT2;
+                    this._y -= dis;
+                    this._x += dis;
+                    if (Math.round(this._y) < roundY || Math.round(this._x) > roundX) {
+                        this.increaseSteps();
+                    }
+                    return 8;
+                } else if (roundX - this.x < this.y - roundY) {
+                    return this._moveByInput(6);
+                } else {
+                    return this._moveByInput(8);
                 }
-                return 8;
             } else if (canRight) {
                 return this._moveByInput(6);
             } else if (canUp) {

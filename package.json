@@ -1,12 +1,12 @@
 {
   "name": "rmmz_movement",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "8 direction movement and pixel movement for RPG Maker MZ.",
   "main": "index.js",
   "scripts": {
     "build": "rm -f ./rmmz_movement.js\nrmpm -c1 ."
   },
-  "author": "",
+  "author": "gsioteam",
   "license": "ISC",
   "dependencies": {
     "rmmz": "https://github.com/gsioteam/Rpg-Maker-MZ-Typescript.git#707d157be21565dd6e853755eae59ebe4aed5b02"
