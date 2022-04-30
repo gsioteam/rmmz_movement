@@ -9,6 +9,18 @@ Game_CharacterBase.prototype.isMoving = function () {
     return _Game_CharacterBase_isMoving.call(this);
 }
 
+Game_Player.prototype.updateDashing = function() {
+    if (this.isMoving() && !this._movePressing) {
+        return;
+    }
+    if (this.canMove() && !this.isInVehicle() && !$gameMap.isDashDisabled()) {
+        this._dashing =
+            this.isDashButtonPressed() || $gameTemp.isDestinationValid();
+    } else {
+        this._dashing = false;
+    }
+};
+
 Game_Player.prototype.moveByInput = function() {
     if ((!this.isMoving() || this._movePressing) && this.canMove()) {
         let direction = Input.dir8;
@@ -65,6 +77,11 @@ Game_Player.prototype._moveByInput = function (direction) {
         return this.canPass(Math.floor(this._x + distencePerFrame), roundY + offset, 6);
     }
 
+    let walkStep = () => {
+        this.increaseSteps();
+        this.checkEventTriggerHere([1, 2]);
+    }
+
     switch (direction) {
         case 1: {
             let canLeft = leftTest(), canDown = downTest();
@@ -75,7 +92,7 @@ Game_Player.prototype._moveByInput = function (direction) {
                     this._y += dis;
                     this._x -= dis;
                     if (Math.round(this._y) > roundY || Math.round(this._x) < roundX) {
-                        this.increaseSteps();
+                        walkStep();
                     }
                     return 2;
                 } else if (this.x - roundX < roundY - this.y) {
@@ -101,7 +118,7 @@ Game_Player.prototype._moveByInput = function (direction) {
                     this._y += dis;
                     this._x += dis;
                     if (Math.round(this._y) > roundY || Math.round(this._x) > roundX) {
-                        this.increaseSteps();
+                        walkStep();
                     }
                     return 2;
                 } else if (roundX - this.x < roundY - this.y) {
@@ -127,7 +144,7 @@ Game_Player.prototype._moveByInput = function (direction) {
                     this._y -= dis;
                     this._x -= dis;
                     if (Math.round(this._y) < roundY || Math.round(this._x) < roundX) {
-                        this.increaseSteps();
+                        walkStep();
                     }
                     return 8;
                 } else if (this.x - roundX < this.y - roundY) {
@@ -153,7 +170,7 @@ Game_Player.prototype._moveByInput = function (direction) {
                     this._y -= dis;
                     this._x += dis;
                     if (Math.round(this._y) < roundY || Math.round(this._x) > roundX) {
-                        this.increaseSteps();
+                        walkStep();
                     }
                     return 8;
                 } else if (roundX - this.x < this.y - roundY) {
@@ -175,7 +192,7 @@ Game_Player.prototype._moveByInput = function (direction) {
                 this.setMovementSuccess(true);
                 this._y += this.distancePerFrame();
                 if (Math.round(this._y) > roundY) {
-                    this.increaseSteps();
+                    walkStep();
                 }
                 if (this._x > roundX && !downTest(1) ||
                     this._x < roundX && !downTest(-1)) {
@@ -190,7 +207,7 @@ Game_Player.prototype._moveByInput = function (direction) {
                 this.setMovementSuccess(true);
                 this._y -= this.distancePerFrame();
                 if (Math.round(this._y) < roundY) {
-                    this.increaseSteps();
+                    walkStep();
                 }
                 if (this._x > roundX && !upTest(1) ||
                     this._x < roundX && !upTest(-1)) {
@@ -205,7 +222,7 @@ Game_Player.prototype._moveByInput = function (direction) {
                 this.setMovementSuccess(true);
                 this._x -= this.distancePerFrame();
                 if (Math.round(this._x) < roundX) {
-                    this.increaseSteps();
+                    walkStep();
                 }
                 if (this._y > roundY && !leftTest(1) ||
                     this._y < roundY && !leftTest(-1)) {
@@ -220,7 +237,7 @@ Game_Player.prototype._moveByInput = function (direction) {
                 this.setMovementSuccess(true);
                 this._x += this.distancePerFrame();
                 if (Math.round(this._x) > roundX) {
-                    this.increaseSteps();
+                    walkStep();
                 }
                 if (this._y > roundY && !rightTest(1) ||
                     this._y < roundY && !rightTest(-1)) {
@@ -244,14 +261,18 @@ Game_Player.prototype._followersMove = function (move) {
             let last = precedingCharacter._lastPosition();
             if (last) {
                 let follower = followers[i];
-                if (last.y > follower._y) {
-                    follower.setDirection(2);
-                } else if (last.y < follower._y) {
-                    follower.setDirection(8);
-                } else if (last.x > follower._x) {
-                    follower.setDirection(6);
-                } else if (last.x < follower._x) {
-                    follower.setDirection(4);
+                if (Math.abs(last.y - follower._y) > Math.abs(last.x - follower._x)) {
+                    if (last.y > follower._y) {
+                        follower.setDirection(2);
+                    } else if (last.y < follower._y) {
+                        follower.setDirection(8);
+                    }
+                } else {
+                    if (last.x > follower._x) {
+                        follower.setDirection(6);
+                    } else if (last.x < follower._x) {
+                        follower.setDirection(4);
+                    }
                 }
                 follower._x = last.x;
                 follower._y = last.y;
@@ -275,18 +296,25 @@ Game_CharacterBase.prototype._recordPosition = function () {
     if (!this._posRecords) {
         this._posRecords = [];
     }
-    let last = this._lastPosition();
+    let last = this._recentPosition();
     function distance(a, b) {
+        if (!a || !b) return 0;
         let x = a.x - b.x;
         let y = a.y - b.y;
         return Math.sqrt(x * x + y * y);
     }
-    if (!last || distance(last, this) > 0.1) {
+    let dis = distance(last, this);
+    if (dis > 1.4) {
+        this._posRecords = [{
+            x: this.x, 
+            y: this.y
+        }];
+    } else if (!last || dis > 0.1) {
         this._posRecords.push({
             x: this.x, 
             y: this.y
         });
-        while (this._posRecords.length > 14) {
+        while (this._posRecords.length > 10) {
             this._posRecords.shift();
         }
     }
@@ -295,6 +323,12 @@ Game_CharacterBase.prototype._recordPosition = function () {
 Game_CharacterBase.prototype._lastPosition = function () {
     if (this._posRecords && this._posRecords.length > 0) {
         return this._posRecords[0];
+    }
+};
+
+Game_CharacterBase.prototype._recentPosition = function() {
+    if (this._posRecords && this._posRecords.length > 0) {
+        return this._posRecords[this._posRecords.length - 1];
     }
 };
 

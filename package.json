@@ -1,6 +1,6 @@
 {
   "name": "rmmz_movement",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "8 direction movement and pixel movement for RPG Maker MZ.",
   "main": "index.js",
   "scripts": {
