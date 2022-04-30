@@ -26,6 +26,13 @@ Game_Player.prototype.moveByInput = function() {
         let direction = Input.dir8;
         if (direction > 0) {
             $gameTemp.clearDestination();
+            if (!this._movePressing) {
+                this._resetCachePosition();
+                var followers = this._followers._data;
+                for (let follower of followers) {
+                    follower._resetCachePosition();
+                }
+            }
 
             this.setMovementSuccess(false);
 
@@ -292,6 +299,10 @@ Game_Player.prototype._followersMove = function (move) {
     }
 };
 
+Game_CharacterBase.prototype._resetCachePosition = function () {
+    this._posRecords = [];
+};
+
 Game_CharacterBase.prototype._recordPosition = function () {
     if (!this._posRecords) {
         this._posRecords = [];
@@ -304,11 +315,8 @@ Game_CharacterBase.prototype._recordPosition = function () {
         return Math.sqrt(x * x + y * y);
     }
     let dis = distance(last, this);
-    if (dis > 1.4) {
-        this._posRecords = [{
-            x: this.x, 
-            y: this.y
-        }];
+    if (dis > 2) {
+        this._resetCachePosition();
     } else if (!last || dis > 0.1) {
         this._posRecords.push({
             x: this.x, 
